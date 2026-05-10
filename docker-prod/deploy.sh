@@ -27,7 +27,7 @@ APP_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 REBUILD_TARGET="${1:-all}"
 DEPLOY_BRANCH="${2:-main}"
-COMPOSE="docker compose -f ${SCRIPT_DIR}/docker-compose.yml"
+COMPOSE="docker compose -f ${SCRIPT_DIR}/docker-compose.yml --env-file ${SCRIPT_DIR}/.env"
 
 echo "======================================================"
 echo " Polyglot Storage — Production Deployment"
