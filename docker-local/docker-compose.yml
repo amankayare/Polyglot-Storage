@@ -1,0 +1,39 @@
+# =============================================================================
+# Local Development Docker Compose — Polyglot Storage Proxy
+#
+# Usage:
+#   docker compose -f docker-local/docker-compose.yml up
+#
+# - Copies source from local filesystem (no git clone)
+# - SQLite for database (no PostgreSQL needed)
+# - Hot-reload via nodemon with volume mount
+# =============================================================================
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker-local/Dockerfile
+    image: polyglot-storage-proxy:local
+    container_name: polyglot-storage-proxy-local
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: development
+      DB_CLIENT: better-sqlite3
+    volumes:
+      - ../src:/app/src          # hot-reload: mount local src into container
+      - sqlite_data:/app/data    # persist SQLite across restarts
+    command: ["./node_modules/.bin/nodemon", "src/server.js"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  sqlite_data:
+    driver: local

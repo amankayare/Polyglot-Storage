@@ -1,0 +1,89 @@
+# =============================================================================
+# Production Docker Compose — Polyglot Storage Proxy
+#
+# Usage:
+#   docker compose -f docker-prod/docker-compose.yml up -d
+#
+# Required environment variables (set in .env.prod or exported in shell):
+#   GIT_REPO, GIT_BRANCH, PORT, DB_USER, DB_PASSWORD, DB_NAME, API_KEY,
+#   GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, GITHUB_UPLOAD_PATH,
+#   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN, GOOGLE_DRIVE_FOLDER_ID
+# =============================================================================
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker-prod/Dockerfile
+      args:
+        GIT_REPO: ${GIT_REPO}
+        GIT_BRANCH: ${GIT_BRANCH:-main}
+    image: polyglot-storage-proxy:${GIT_BRANCH:-latest}
+    container_name: polyglot-storage-proxy
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+      DB_CLIENT: pg
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - web-network
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — production database
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: polyglot-storage-db
+    restart: unless-stopped
+    networks:
+      - internal
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  web-network:
+    external: true   # created and owned by Global-Proxy
+  internal:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
