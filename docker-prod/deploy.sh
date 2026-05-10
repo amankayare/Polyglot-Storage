@@ -43,9 +43,9 @@ cd "${APP_DIR}"
 # -----------------------------------------------------------------------------
 # Validate .env exists
 # -----------------------------------------------------------------------------
-if [ ! -f ".env" ]; then
-  echo "ERROR: .env file not found at ${APP_DIR}/.env"
-  echo "       Please create it from .env.prod.example before deploying."
+if [ ! -f "${SCRIPT_DIR}/.env" ]; then
+  echo "ERROR: .env file not found at ${SCRIPT_DIR}/.env"
+  echo "       Please create it before deploying."
   exit 1
 fi
 
