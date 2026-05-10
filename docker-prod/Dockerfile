@@ -29,8 +29,8 @@ WORKDIR /build
 # Clone only the specified branch/tag (shallow clone for speed)
 RUN git clone --branch "${GIT_BRANCH}" --depth 1 "${GIT_REPO}" .
 
-# Install only production dependencies
-RUN npm ci --omit=dev
+# Install only production dependencies (removing lockfile to avoid private registry issues)
+RUN rm -f package-lock.json && npm install --omit=dev
 
 # =============================================================================
 # Stage 2 — runner: minimal, secure, production image
