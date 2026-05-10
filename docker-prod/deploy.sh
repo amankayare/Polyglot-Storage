@@ -20,10 +20,14 @@
 
 set -euo pipefail
 
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Project root is one level up from docker-prod/
+APP_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
 REBUILD_TARGET="${1:-all}"
 DEPLOY_BRANCH="${2:-main}"
-APP_DIR="/opt/polyglot-storage"
-COMPOSE="docker compose -f ${APP_DIR}/docker-prod/docker-compose.yml"
+COMPOSE="docker compose -f ${SCRIPT_DIR}/docker-compose.yml"
 
 echo "======================================================"
 echo " Polyglot Storage — Production Deployment"

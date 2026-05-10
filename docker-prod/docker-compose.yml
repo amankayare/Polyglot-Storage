@@ -9,7 +9,7 @@
 #   GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, GITHUB_UPLOAD_PATH,
 #   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN, GOOGLE_DRIVE_FOLDER_ID
 # =============================================================================
-
+name: polyglot
 services:
   app:
     build:
