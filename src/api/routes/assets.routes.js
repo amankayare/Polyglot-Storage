@@ -297,6 +297,34 @@ function createAssetsRouter(controller) {
 
   /**
    * @openapi
+   * /assets/stage/{stageId}/preview:
+   *   get:
+   *     tags: [Staging]
+   *     summary: Get a preview of a staged asset
+   *     parameters:
+   *       - in: path
+   *         name: stageId
+   *         required: true
+   *         schema:
+   *           type: string
+   *           format: uuid
+   *     responses:
+   *       200:
+   *         description: Binary file content
+   *         content:
+   *           image/*:
+   *             schema:
+   *               type: string
+   *               format: binary
+   *       401:
+   *         description: Unauthorized
+   *       404:
+   *         description: Staged asset not found or expired
+   */
+  router.get('/stage/:stageId/preview', controller.previewStaged);
+
+  /**
+   * @openapi
    * /assets/stage/{stageId}:
    *   delete:
    *     tags: [Staging]

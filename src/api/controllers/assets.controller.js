@@ -90,7 +90,15 @@ class AssetsController {
       }
 
       const result = this.assetService.stage(fileBuffer, filename, mimeType);
-      res.status(201).json({ success: true, data: result, error: null });
+      
+      // Add previewUrl to the response
+      const previewUrl = `/api/v1/assets/stage/${result.stageId}/preview`;
+      
+      res.status(201).json({ 
+        success: true, 
+        data: { ...result, previewUrl }, 
+        error: null 
+      });
     } catch (err) {
       next(err);
     }
@@ -118,6 +126,21 @@ class AssetsController {
     try {
       this.assetService.discardStaged(req.params.stageId);
       res.json({ success: true, data: { message: 'Staged asset discarded' }, error: null });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
+   * GET /api/v1/assets/stage/:stageId/preview
+   */
+  async previewStaged(req, res, next) {
+    try {
+      const { stageId } = req.params;
+      const { fileBuffer, mimeType } = this.assetService.staging.get(stageId);
+      
+      res.set('Content-Type', mimeType);
+      res.send(fileBuffer);
     } catch (err) {
       next(err);
     }
