@@ -14,6 +14,7 @@ class AssetsController {
     this.stage = this.stage.bind(this);
     this.confirmStaged = this.confirmStaged.bind(this);
     this.discardStaged = this.discardStaged.bind(this);
+    this.previewStaged = this.previewStaged.bind(this);
   }
 
   /**
