@@ -18,8 +18,8 @@ ARG GIT_BRANCH=main
 # =============================================================================
 FROM node:20-alpine AS builder
 
-# Install git for source cloning
-RUN apk add --no-cache git
+# Install git for source cloning, and python/build tools for better-sqlite3 compilation
+RUN apk add --no-cache git python3 make g++
 
 ARG GIT_REPO
 ARG GIT_BRANCH=main
