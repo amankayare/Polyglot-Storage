@@ -38,7 +38,7 @@ class GoogleDriveProvider extends IStorageProvider {
         requestBody: { role: 'reader', type: 'anyone' },
       });
 
-      const publicUrl = `https://drive.google.com/uc?id=${data.id}&export=view`;
+      const publicUrl = `https://lh3.googleusercontent.com/d/${data.id}`;
 
       logger.info(`Google Drive: uploaded ${filename} (${data.id})`);
       return { externalId: data.id, publicUrl };
@@ -51,7 +51,7 @@ class GoogleDriveProvider extends IStorageProvider {
   async getUrl(externalId) {
     try {
       await this.drive.files.get({ fileId: externalId, fields: 'id' });
-      const publicUrl = `https://drive.google.com/uc?id=${externalId}&export=view`;
+      const publicUrl = `https://lh3.googleusercontent.com/d/${externalId}`;
       return { publicUrl };
     } catch (err) {
       if (err.code === 404) {
